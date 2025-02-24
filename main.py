@@ -1,7 +1,7 @@
 from ninept import qwen
 import subprocess
 import os
-os.chdir('/main/ahmed')
+os.chdir('/main/ahmed') #add your own directory
 import pandas as pd
 import numpy as np
 from scipy.stats import skew, kurtosis
@@ -431,6 +431,6 @@ def llm_output():
         print("Train and test CSV files not found in the dataset directory.")
 
 if __name__ == "__main__":
-    run_file("DataExtraction.py")
+    #run_file("DataExtraction.py") #(we don't need this)
     run_file("GettingMetadata.py")
     llm_output()

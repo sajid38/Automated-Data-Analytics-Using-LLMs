@@ -332,8 +332,10 @@ def save_script_to_json(script_content, json_file_path):
     print(f"✅ Script saved to JSON file: {json_file_path}")
 
 
+#merging part
 
 def llm_output():
+    print("Starting Data Extraction")
     datasets = [
     "digit-recognizer",
     "equity-post-HCT-survival-predictions",
@@ -362,11 +364,13 @@ def llm_output():
         test_df = pd.read_csv(os.path.join(dataset_path, test_file))
         target_variable = train_df.columns[-1] if not train_df.empty else None
         train_description, process_train_df = automated_eda(train_df)
+        print("\nStarting EDA")
         print(train_description)
-        print(process_train_df.head())
+        #print(process_train_df.head())
+        print("\nEDA Summary: ")
         response_train = generate_eda_with_qwen(train_description)
         print(response_train)
-        print("Welcome! Please enter your query:")
+        print("\n Starting External Knowledge")
         user_query = result.strip()  # Step 1: Get User Input
         print("\nGenerating multiple related queries...")
         
@@ -397,12 +401,15 @@ def llm_output():
                 #print("\nSummary of Results:")
                 print(final_summary)
         ext_info = final_summary
+        print("starting feature engineering")
         results= fe_main(process_train_df, response_train, ext_info, response=target_variable, apply_standardization=True)
         print("########################### results ################################### \n")
         print(results["fe_summary"])
         results["df_new"].to_csv("tit_test_final.csv", index=False)
+        print("starting Model Selection")
         dataset_path = 'tit_test_final.csv'
         model_selection_df = pd.read_csv(dataset_path)
+        
         # Example preprocessed data (replace with your actual data)
         X_train = model_selection_df = pd.read_csv(dataset_path).iloc[:, :-1].values  # All columns except the last one as features
         y_train = model_selection_df = pd.read_csv(dataset_path).iloc[:, -1].values   # The last column as the target
@@ -431,6 +438,7 @@ def llm_output():
         print("Train and test CSV files not found in the dataset directory.")
 
 if __name__ == "__main__":
+
     #run_file("DataExtraction.py") #(we don't need this)
     run_file("GettingMetadata.py")
     llm_output()

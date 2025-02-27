@@ -86,9 +86,10 @@ def automated_eda(df, unique_threshold=20):
     # Distribution Analysis for Numeric Columns
     description += "\nSkewness and Kurtosis of Numeric Features:\n"
     numeric_cols = df.select_dtypes(include=[np.number]).columns
+    valid_numeric_cols = [col for col in numeric_cols if df[col].nunique() > 1 and df[col].std() > 1e-9]
     skew_kurt = pd.DataFrame({
-        "Skewness": df[numeric_cols].apply(skew),
-        "Kurtosis": df[numeric_cols].apply(kurtosis)
+    "Skewness": df[valid_numeric_cols].apply(lambda x: skew(x.dropna())),
+    "Kurtosis": df[valid_numeric_cols].apply(lambda x: kurtosis(x.dropna()))
     })
     description += str(skew_kurt) + "\n"
     
@@ -371,7 +372,7 @@ def llm_output():
         response_train = generate_eda_with_qwen(train_description)
         print(response_train)
         print("\n Starting External Knowledge")
-        user_query = result.strip()  # Step 1: Get User Input
+        user_query = ("Kaggle:"+selected_dataset).strip()  # Step 1: Get User Input
         print("\nGenerating multiple related queries...")
         
         generated_queries = generate_queries_with_qwen(user_query)  # Step 2: Generate Multiple Queries
